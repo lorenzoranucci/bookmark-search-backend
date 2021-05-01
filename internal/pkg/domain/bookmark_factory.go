@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"io"
 	"io/ioutil"
 )
@@ -46,6 +48,7 @@ func (bf *BookmarkFactory) CreateBookmark(url string, title *string) (*Bookmark,
 	}
 
 	return &Bookmark{
+		UID:     fmt.Sprintf("%x", sha256.Sum256([]byte(url))),
 		Title:   finalTitle,
 		Content: string(all),
 	}, nil

@@ -16,6 +16,7 @@ type BookmarkRepository struct {
 }
 
 type Bookmark struct {
+	UID string `json:"uid"`
 	URL string `json:"url"`
 	Content string `json:"body"`
 	Title string `json:"title"`
@@ -23,9 +24,8 @@ type Bookmark struct {
 
 func (pr *BookmarkRepository) Add(bookmark *domain.Bookmark) error {
 	request := elastic.NewBulkIndexRequest().Index("page").
-		Doc(
-			mapDomainBookmarkWithElasticsearchBookmark(bookmark),
-		)
+		Doc(mapDomainBookmarkWithElasticsearchBookmark(bookmark)).
+		Id(bookmark.UID)
 
 	bulkResponse, err := pr.ElasticClient.
 		Bulk().
@@ -53,6 +53,7 @@ func (pr *BookmarkRepository) Add(bookmark *domain.Bookmark) error {
 
 func mapDomainBookmarkWithElasticsearchBookmark(domainBookmark *domain.Bookmark) Bookmark {
 	return Bookmark{
+		UID: domainBookmark.UID,
 		URL:  domainBookmark.URL,
 		Content: domainBookmark.Content,
 		Title: domainBookmark.Title,
